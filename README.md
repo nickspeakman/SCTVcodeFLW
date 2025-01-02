@@ -26,7 +26,7 @@ Abstract clock with small dot for hours larger dot for minutes flowing in the di
 Over 2,500 four letter words with definitions, each word displayed for 10 seconds up until 50 seconds when the time is displayed for 10 seconds
 
 
-![Swear](/Screenshots/FLW.jpg "Swear Clock")
+![Swear](/Screenshots/Swear.jpg "Swear Clock")
 FLW but non-stop swearing. Each word displayed for 10 seconds up until 50 seconds when the time is displayed for 10 seconds
 
 
