@@ -2,14 +2,8 @@
 // ----------------------------- Main startup code ------------------------------
 void setup() 
 {
-  
-#ifdef EXTERNAL_DAC
-  pinMode(XPosPin, INPUT_DISABLE);  // SCTV E needs this to prevent analog input hysteresis
-  pinMode(YPosPin, INPUT_DISABLE);  //
-#else
   analogWriteResolution(12);    // Use the real DACs for X and Y position
-#endif
-
+  
   // Circle lookup tables
   for (i=0;i<nsteps;i++) {
     costab[i] = int(65536.*cos(float(i*2)*pi/float(nsteps)));
@@ -20,13 +14,9 @@ void setup()
   pinMode(encAPin,   INPUT_PULLUP);   // encoder quadrature signals
   pinMode(encBPin,   INPUT_PULLUP);
   pinMode(BlankPin, OUTPUT);   // high blanks the display
-#ifdef EXTERNAL_DAC
-  pinMode(DACCSPin, OUTPUT);   // set up the LTC2632 DAC
-  SPI.begin();
-#endif
 
   InitEnc();
-  rn1 = rn2 = rn3 = rn4 = 0x45;   // random number generator seed? Why not use random()?
+  //rn1 = rn2 = rn3 = rn4 = 0x45;   // random number generator seed? Why not use random()?
   Wire.begin();          // RTC uses I2C
   Serial.begin(115200);    // debug port
   delay(100);
@@ -34,8 +24,9 @@ void setup()
   pushed = false;
   theClock = NClks;    // draw a splash screen until knob turned
   InMenu = false;
-//  FlwStr[4] = '\n';
-//  MakeFLW();
+  
+  MakeFLW();
+  MakeFLWdef();
   doHaiku();                 // get a fresh one
 
   // initialize scores etc.
@@ -53,17 +44,6 @@ void setup()
 
 // --------------------------- Main loop --------------------------
 
-/* commented out for test
-// test DAC with a ramp
-void loop() {
-  startDAC();
-  for (int ii = 0; ii<4096; ii++) {
-    dacWrite(0, ii);
-    dacWrite(1, ii);
-  }
-  endDAC();
-}
- end of test loop */
 
 /* don't run the real one for now, testing things first.
 // test the string writing code. 
@@ -71,7 +51,7 @@ void loop() {
 char TestString[] = "Hello world";
 
 void loop() {
-  Scale = 10;
+  Scale = 2;
   SetScale();
   ChrXPos = 00;
   ChrYPos = 128;
@@ -79,8 +59,8 @@ void loop() {
   YSaver = 0;
   StrPtr = TestString;
   DispStr();
-//  Serial.println("This is one strings worth.");
-  delay(5);   // once per frame?
+ // Serial.println("This is one strings worth.");
+//  delay(30);   // once per frame?
 }
 // end of test code */ 
 
@@ -134,17 +114,15 @@ void loop()
         Serial.printf("Connect before begin\n");
         if (drivers[i] == &userial) 
         {
-          userial.begin(usbBaudRate); // This hangs if splash screen is too big, awaiting proper fix
+          userial.begin(usbBaudRate);
         }
         Serial.printf("Exiting connect code\n");
       }
     }
   }
   // Read the USB serial port if anything's there
-  if (userial) {
-    while (userial.available())
-      myGps.encode(userial.read());
-  }
+  while (userial.available())
+    myGps.encode(userial.read());
 
   if ((theClock != 1) && (theClock != 2))  // Pong and Tetris use position controls as paddles
   {
@@ -158,7 +136,7 @@ void loop()
   }
 
   getTheTime();   // read whichever clock is correctest, make it be local time
-  
+   
   blinkCount++;
   Blink = (blinkCount >> BlnkBit) & 1;  // a one bit, 5 times a second thingie
   
@@ -175,6 +153,11 @@ void loop()
     if (EncDir != 0) 
     {   // If knob turned, choose the next clock face
       theClock += EncDir;
+
+      RandClockRunning = 0;   // manual intervention resets random
+      HrsOld = 99;    // manual intervention resets random
+      SecsNew = 99;   // manual intervention resets random
+
       if (theClock >= NClks) theClock = 0;   // select the next clock face
       if (theClock < 0) theClock = NClks - 1;
       if (theClock == 1) 
@@ -191,10 +174,31 @@ void loop()
       }
       EncDir = 0;
     }
-    whichList = ClkList[theClock];       // point to the clock drawlist we are displaying now
-    if (theClock == 0) DrawClk();        // clock 0 has hands to draw
-    if (theClock == 1) doPong();         // clock 1 is Pong
-    if (theClock == 2) drawTetris();     // clock 2 is Tetris
+
+    if ((RandClockRunning == 1) && (HrsOld != Hrs)){           // we're randomising the clocks...but checking the hour has changed
+      ClockChosen = random(1,ClockCount);
+
+    if ((ClockOld!=ClockChosen) && (ClockChosen != 1) && (ClockChosen != 2)){  // no two hours should be the same and shouldn't be Tetris or Pong
+      theClock = ClockChosen;
+      SecsNew = 99;     //reset
+      DisplayRand = 0;  // remove text off screen
+      HrsOld = Hrs;     // note this hour
+      ClockOld = ClockChosen; //don't repeat
+      RandClockRunning = 1;   //unless anything is touched by the user... keep randomising!
+    }
+    }
+
+    whichList = ClkList[theClock];        // point to the clock drawlist we are displaying now
+    if (theClock == 0) DrawClk();         // clock 0 has hands to draw
+    if (theClock == 1) doPong();          // clock 1 is Pong
+    if (theClock == 2) drawTetris();      // clock 2 is Tetris
+    if (theClock == 12) Geometry();       // geometry circle clock
+    if (theClock == 13) Wordclock();      // word clock
+    if (theClock == 14) Cube();           // cube clock
+    if (theClock == 15) Tron();           // Tron clock
+    if (theClock == 16) Dot();           // dot analogue clock
+    if (theClock == 17) Randclk();      // Random clock
+
     if (pushed) 
     {
       whichList = mainMenu;
@@ -209,6 +213,22 @@ void loop()
     next_tick += tick_length;
 
     move_tetromino_down();
+  }
+  if (frame%FLWFrames == 0) MakeFLW();                 // get a fresh one
+
+  if (frame%FLWdefFrames == 0) MakeFLWdef();                 // get a fresh one
+
+//  unsigned int beforeTime = micros();
+  copyList(whichList);            // make fresh copy of draw list for us to muck with
+  makeTimeStrings();              // fill in the time variables into number strings
+  updateScreenSaver();
+//  unsigned int stringsTime = micros();
+  Center(TheList);                // fill in the positions of each string in our copy
+//  unsigned int centerTime = micros();
+  DoAList(TheList);               // draw it on the screen
+//  unsigned int drawTime = micros();
+  while (micros() - lastMicros < (1000000/Hertz)) {
+    delayMicroseconds(10);
   }
 
   if (frame%haikuFrames == 0) doHaiku();                 // get a fresh one
@@ -230,6 +250,14 @@ void loop()
  // if (frame%20 == 0) Serial.printf("strings %4d   center %4d   draw %6d us\n", 
  //                  stringsTime-beforeTime, centerTime-stringsTime, drawTime-centerTime);
   frame++;   // turn off diagnostic printing
+
+  if ((rollsecs != Secs) || (rollcounter > 99)) {
+    rollcounter = 0;
+    rollsecs = Secs;
+  }
+  else{
+    rollcounter = rollcounter + 3;
+  }
 }
 
  // end of real code */

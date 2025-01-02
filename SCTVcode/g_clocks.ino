@@ -47,6 +47,8 @@ char DayStr[] = "00\n";
 char HrsStr[] = "00";
 char MinStr[] = "00";
 char SecStr[] = "00\n";
+char JiffStr[] = "00\n";
+
 
 // Some fixed strings
 char BlankLn[] = "\n";
@@ -62,11 +64,11 @@ char OffStr[]  = "Off\n";  // both are 5 bytes for easy copying
 char scopeClock[] = "The Scope Clock\n";
 char fromStr[]    = "from\n";
 char cathCorn[]   = "Cathode Corner\n";
-char copyR[]   = "(C)2022 David Forbes\n";
+char copyR[]   = "(C)2021 David Forbes\n";
 struct item splashList[] = {
-  {text,8,0,scopeClock,0,0},
+    {text,12,0,scopeClock,0,0},
   {text,8,0,fromStr,   0,0},
-  {text,8,0,cathCorn,  0,0},
+  {text,12,0,cathCorn,  0,0},
   {text,10,0,BlankLn,   0,0},
   {text,6,0,versionNo, 0,0},
   {text,6,0,copyR, 0,0},
@@ -147,45 +149,30 @@ void DrawClk() {
 
 // total time/date/day digital clock draw list
 struct item timefList[]  = {
+  {text,5,0,BlankLn, 0,0}, 
   {text,20,0,WDayStr, 0,0},   // day of week
-  {text,20,0,HrsStr,  0,0},   // hours
-  {text,20,0,ColStr,  0,0},   // colon
-  {text,20,0,MinStr,  0,0},   // mins
-  {text,20,0,ColStr,  0,0},   // colon
-  {text,20,0,SecStr,  0,0},   // secs
-  {text,20,0,MonthStr,0,0},   // month
-  {text,20,0,SpaStr,  0,0},   
-  {text,20,0,DayStr,  0,0},   // day
-  {text,20,0,CenStr,  0,0},   // the full year
-  {text,20,0,YrsStr,  0,0}, 
-  {text,20,0,BlankLn, 0,0}, 
-  {listend,0,0,BlankLn, 0,0}
-};
-
-// 6 digit digital clock with date draw list
-struct item time6dList[] = {
-  {text,16,0,MonthStr,0,0},  // months
-  {text,16,0,SpaStr,  0,0},  // space
-  {text,16,0,DayStr,  0,0},  // days
-  {text,40,0,HrsStr,  0,0},  // hours
-  {text,40,0,ColStr,  0,0},  // colon
-  {text,40,0,MinStr,  0,0},  // mins
-  {text,40,0,BlankLn, 0,0},  // next line
-  {text,30,0,SecStr,  0,0},  // secs
+  {text,5,0,BlankLn, 0,0}, 
+  {text,25,0,HrsStr,  0,0},   // hours
+  {text,25,0,ColStr,  0,0},   // colon
+  {text,25,0,MinStr,  0,0},   // mins
+  {text,25,0,ColStr,  0,0},   // colon
+  {text,25,0,SecStr,  0,0},   // secs
+  {text,15,0,MonthStr,0,0},   // month
+  {text,15,0,SpaStr,  0,0},   
+  {text,15,0,DayStr,  0,0},   // day
+  {text,15,0,CenStr,  0,0},   // the full year
+  {text,15,0,YrsStr,  0,0}, 
+  {text,15,0,BlankLn, 0,0}, 
   {listend,0,0,BlankLn, 0,0}
 };
 
 
-// 4 digit digital clock with date draw list
-struct item time4dList[] = {
-  {text,16,0,WDayStr, 0,0},  // weekday
+// 4 digit digital clock draw list
+struct item time4nList[] = {
   {text,40,0,HrsStr,  0,0},  // hours
   {text,40,0,ColStr,  0,0},  // colon
   {text,40,0,MinStr,  0,0},  // mins
-  {text,40,0,BlankLn, 0,0},  // next line
-  {text,16,0,MonthStr,0,0},  // months
-  {text,16,0,SpaStr,  0,0},  // space
-  {text,16,0,DayStr,  0,0},  // days
+  {text,40,0,BlankLn, 0,0}, // next line
   {listend,0,0,BlankLn,0,0}
 };
 
@@ -201,15 +188,45 @@ struct item time6nList[] = {
   {listend,0,0,BlankLn,0,0}
 };
 
-
-// 4 digit digital clock draw list
-struct item time4nList[] = {
+// 4 digit digital clock with date draw list
+struct item time4dList[] = {
+  {text,16,0,WDayStr, 0,0},  // weekday
   {text,40,0,HrsStr,  0,0},  // hours
   {text,40,0,ColStr,  0,0},  // colon
   {text,40,0,MinStr,  0,0},  // mins
-  {text,40,0,BlankLn, 0,0}, // next line
+  {text,40,0,BlankLn, 0,0},  // next line
+  {text,16,0,MonthStr,0,0},  // months
+  {text,16,0,SpaStr,  0,0},  // space
+  {text,16,0,DayStr,  0,0},  // days
   {listend,0,0,BlankLn,0,0}
 };
+
+
+// 6 digit digital clock with date draw list
+struct item time6dList[] = {
+  {text,16,0,MonthStr,0,0},  // months
+  {text,16,0,SpaStr,  0,0},  // space
+  {text,16,0,DayStr,  0,0},  // days
+  {text,40,0,HrsStr,  0,0},  // hours
+  {text,40,0,ColStr,  0,0},  // colon
+  {text,40,0,MinStr,  0,0},  // mins
+  {text,40,0,BlankLn, 0,0},  // next line
+  {text,30,0,SecStr,  0,0},  // secs
+  {listend,0,0,BlankLn, 0,0}
+};
+
+// 8 digit digital clock draw list
+struct item time8nList[] = {
+  {text,25,0,HrsStr,  0,0},  // hours
+  {text,25,0,BlankLn,0,0},
+  {text,25,0,MinStr,  0,0},  // mins
+  {text,25,0,BlankLn,0,0},
+  {text,25,0,SecStr,  0,0},  // secs
+  {text,25,0,JiffStr,  0,0},  // ticks
+  {listend,0,0,BlankLn,0,0}
+};
+
+
 
 // ----------------------- Time string generator -----------------------
 
@@ -269,6 +286,8 @@ void makeTimeStrings() {
   MinStr[1] = (Mins % 10) | '0';
   SecStr[0] = (Secs / 10) | '0';
   SecStr[1] = (Secs % 10) | '0';
+  JiffStr[0] = (rollcounter / 10) | '0';
+  JiffStr[1] = (rollcounter % 10) | '0';
   HzStr[0] = (Hertz / 10) | '0';
   if (DST) 
   {

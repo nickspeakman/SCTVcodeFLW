@@ -1,29 +1,39 @@
 // ------------------------- Four letter words -----------------------------
 
-// four letter word stuff
-int rn1;            // first  int of random number
-int rn2;            // second int of random number
-int rn3;            // third  int of random number
-int rn4;            // last   int of random number
-int xor1;           // first  int of thing to xor with it
-int xor4;           // last   int of thing to xor with it
-char FlwStr[] = "piss\n";      // four letters plus a NL and a 0
+char FlwStr[] = "word\n";      // four letters plus a NL and a 0
+int fptr = 0;                 // index into that list
+char TimeStr[] [6] = {""};      // time string 
+char flwEndStr[] = "\n";
+
 
 // A whole bunch of four letter words, no juicy ones. 
-const char* FLWs[]  = 
- {"abet","able","ably","abut","aced","aces","ache","achy","acid","acme",
-//  "yowl","yuck","yuks","yule","yups","yurt",
-//  "zags","zany","zaps","zeal","zees","zerk","zero","zest","zigs","zinc",
-  "zing","zips","ziti","zits","zone","zonk","zoom","zoos","zori"};
+const char FLWs[] [6]  = 
+ {"Shit\n","Cunt\n","Wank\n","Twat\n","Tits\n","Cums\n","Fuck\n","Arse\n","Feck\n","Puff\n",
+ "Piss\n","Flap\n","Knob\n","Cock\n","Jizz\n","Ball\n","Clit\n","Boob\n","Frig\n","Wang\n",
+ "Crap\n","Muff\n","Butt\n","Quim\n","Nads\n","Pube\n","Dick\n","Jerk\n","Smeg\n","Ring\n",
+ "Toss\n","Gash\n","Anus\n","Bush\n"};
 
-int FLWLen = sizeof(FLWs);
+int FLWLen = 34;
+const int FLWFrames = 300;  // how many frames to show each Word for 
+
 
 // Four letter word draw list
 struct item flwList[] = {
-  {text,40,0,FlwStr,0,0},  // the nasty word itself
+  {text,45,0,FlwStr,0,0},  // the nasty word itself
   {listend,0,0,BlankLn,0,0}
 };
 
-void MakeFLW() {
-  strcpy(FlwStr, (char*)&(FLWs[1]));
+void MakeFLW(void) 
+{
+  if (Secs > 15) {
+    fptr = random(FLWLen);
+    strcpy(FlwStr, FLWs[fptr]);
+    }
+  else{
+    strcpy(FlwStr, TimeStr[0]);//blank it
+    strcpy(FlwStr, HrsStr);
+    strcat(FlwStr, ColStr);
+    strcat(FlwStr, MinStr);
+    strcat(FlwStr, flwEndStr);
+  }
 }

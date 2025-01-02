@@ -19,6 +19,7 @@ const int ModClk   = 14;
 // Menu fields that get worked on
 const int TimMCod = 15;
 const int LocMCod = 16;
+const int FlwMCod = 17;
 const int MainCod = 19;
 const int TimDCod = 20;
 const int MainDCod = 21;
@@ -31,7 +32,7 @@ struct item mainMenu[] = {
   {menu,10,MainDCod,DoneStr,  0,0},
   {menu,10,TimMCod,setTimDat ,0,0},
   {menu,10,LocMCod,setLocale, 0,0},
-//{menu,10,FlwMCod,setFLW,    0,0},   // not used yet
+  {menu,10,FlwMCod,setFLW,    0,0},   // not used yet
   {listend,0,0,BlankLn,0,0}
 };
 
@@ -83,20 +84,28 @@ struct item locMenu[] = {
 // This is the clock display option list
 
 // If Clock is zero; then draw hands
-const int NClks = 8;    // number of clock faces to choose from (splash doesn't count)
+const int NClks = 18;    // number of clock faces to choose from (splash doesn't count) also change "ClockCount" in o_random_clock.ino
 
 // list of clock face draw lists
 item * ClkList[] = 
    {faceList,    // analog clock face, needs hands drawn
     pongList,    // play Pong, special code is run for this
     tetrisList,  // play Tetris
- //   timefList,   // 6 digit digital clock with full date, day
+    timefList,   // 6 digit digital clock with full date, day
     time4nList,  // 4 digit digital clock
     time6nList,  // 6 digit digital clock
     time4dList,  // 4 digit digital clock with date
     time6dList,  // 6 digit digital clock with date
+    time8nList,  // 8 digit digital clock
     haikuList,   // some poetry at random
- //   flwList,     // four letter words at random
+    flwList,     // four letter words at random
+    flwdefList,  // four letter words with definitions
+    geometryList, // crazy circle patterns
+    wordlclockList, // word clock
+    cubeList, // cube clock
+    tronList, // Tron clock
+    dotList, // Analogue dot clock
+    randList, // Random clock
     splashList,  // splash screen vanishes when knob touched
     0};
 // -------------------------- Menu navigation -----------------------
