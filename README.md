@@ -7,3 +7,14 @@ This code is based on Cathode Corner's v1.0.2 code with a series of added clocks
 
 A demonstration can be seen in the video below
 [![YouTubeVideo](/Screenshots/Video.png)](https://youtu.be/ui1L9TtrJrA)
+
+Example clocks shown below
+
+![Swiss Railway](/Screenshots/SwissRailway.jpg "Swiss Railway Clock")
+This is an analog clock based on the Swiss Railway clocks with big dots on the end of their second hands
+
+![Tron](/Screenshots/Tron.jpg "Tron Clock")
+An attempt to make something that looked like a Tron lightcycles grid
+
+![Dots](/Screenshots/Dots.jpg "Dot Clock")
+Abstract clock with small dot for hours larger dot for minutes flowing in the direction of the time and large circle for seconds
